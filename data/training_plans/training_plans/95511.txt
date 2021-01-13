@@ -1,0 +1,18 @@
+Nested Loop  (cost=0.43..823054.28 rows=1 width=0) (actual time=11803.269..12031.555 rows=1 loops=1)
+  Join Filter: (ci.movie_id = t.id)
+  ->  Nested Loop  (cost=0.00..823045.91 rows=1 width=8) (actual time=11803.207..12031.444 rows=2 loops=1)
+        Join Filter: (ci.movie_id = mi_idx.movie_id)
+        Rows Removed by Join Filter: 87098
+        ->  Seq Scan on movie_info_idx mi_idx  (cost=0.00..25185.44 rows=368 width=4) (actual time=130.606..335.868 rows=260 loops=1)
+              Filter: (info_type_id > 101)
+              Rows Removed by Filter: 1379775
+        ->  Materialize  (cost=0.00..796072.80 rows=324 width=4) (actual time=8.288..44.918 rows=335 loops=260)
+              ->  Seq Scan on cast_info ci  (cost=0.00..796071.18 rows=324 width=4) (actual time=2154.796..11670.387 rows=335 loops=1)
+                    Filter: ((role_id > 1) AND (person_id = 2396199))
+                    Rows Removed by Filter: 36244009
+  ->  Index Scan using title_pkey on title t  (cost=0.43..8.36 rows=1 width=4) (actual time=0.048..0.048 rows=0 loops=2)
+        Index Cond: (id = mi_idx.movie_id)
+        Filter: (production_year < 2012)
+        Rows Removed by Filter: 0
+Planning time: 1.208 ms
+Execution time: 12031.699 ms

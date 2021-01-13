@@ -1,0 +1,16 @@
+Hash Join  (cost=709678.15..738311.87 rows=182 width=0) (actual time=11193.505..11737.024 rows=26 loops=1)
+  Hash Cond: (mi_idx.movie_id = t.id)
+  ->  Seq Scan on movie_info_idx mi_idx  (cost=0.00..25185.44 rows=919057 width=4) (actual time=0.011..513.051 rows=920110 loops=1)
+        Filter: (info_type_id > 99)
+        Rows Removed by Filter: 459925
+  ->  Hash  (cost=709671.90..709671.90 rows=500 width=8) (actual time=11101.242..11101.242 rows=44 loops=1)
+        Buckets: 1024  Batches: 1  Memory Usage: 10kB
+        ->  Nested Loop  (cost=0.43..709671.90 rows=500 width=8) (actual time=9004.803..11101.184 rows=44 loops=1)
+              ->  Seq Scan on cast_info ci  (cost=0.00..705507.15 rows=500 width=4) (actual time=9004.620..11098.387 rows=44 loops=1)
+                    Filter: (person_id = 2329129)
+                    Rows Removed by Filter: 36244300
+              ->  Index Only Scan using title_pkey on title t  (cost=0.43..8.32 rows=1 width=4) (actual time=0.060..0.061 rows=1 loops=44)
+                    Index Cond: (id = ci.movie_id)
+                    Heap Fetches: 44
+Planning time: 1.229 ms
+Execution time: 11737.123 ms

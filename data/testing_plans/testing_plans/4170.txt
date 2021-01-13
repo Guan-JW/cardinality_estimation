@@ -1,0 +1,19 @@
+Hash Join  (cost=224774.35..313556.81 rows=184724 width=184)
+  Hash Cond: (mc.movie_id = t.id)
+  ->  Seq Scan on movie_companies mc  (cost=0.00..57926.93 rows=1005408 width=40) (actual time=0.029..1271.512 rows=710605 loops=1)
+        Filter: ((company_id < 56907) AND (company_type_id > 1))
+        Rows Removed by Filter: 1898524
+  ->  Hash  (cost=209439.28..209439.28 rows=464566 width=144) (actual time=15374.042..15374.042 rows=459925 loops=1)
+        Buckets: 32768  Batches: 32  Memory Usage: 2137kB
+        ->  Merge Join  (cost=84794.24..209439.28 rows=464566 width=144) (actual time=975.487..14253.064 rows=459925 loops=1)
+              Merge Cond: (t.id = mi_idx.movie_id)
+              ->  Index Scan using title_pkey on title t  (cost=0.43..110313.87 rows=2528527 width=94) (actual time=0.007..12220.461 rows=2525794 loops=1)
+              ->  Materialize  (cost=84793.43..87116.26 rows=464566 width=50) (actual time=975.445..1257.905 rows=459925 loops=1)
+                    ->  Sort  (cost=84793.43..85954.84 rows=464566 width=50) (actual time=975.440..1179.036 rows=459925 loops=1)
+                          Sort Key: mi_idx.movie_id
+                          Sort Method: external merge  Disk: 11688kB
+                          ->  Seq Scan on movie_info_idx mi_idx  (cost=0.00..25185.44 rows=464566 width=50) (actual time=0.025..537.660 rows=459925 loops=1)
+                                Filter: (info_type_id = 101)
+                                Rows Removed by Filter: 920110
+Planning time: 1.429 ms
+Execution time: 17332.049 ms

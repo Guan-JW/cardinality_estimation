@@ -1,0 +1,21 @@
+Nested Loop  (cost=164177.86..248105.60 rows=9956 width=0) (actual time=2172.763..2397.424 rows=19254 loops=1)
+  ->  Merge Join  (cost=164177.43..166672.24 rows=52337 width=8) (actual time=2172.667..2286.755 rows=19254 loops=1)
+        Merge Cond: (mc.movie_id = mk.movie_id)
+        ->  Sort  (cost=67833.49..68243.07 rows=163832 width=4) (actual time=849.689..900.830 rows=167708 loops=1)
+              Sort Key: mc.movie_id
+              Sort Method: external merge  Disk: 2296kB
+              ->  Seq Scan on movie_companies mc  (cost=0.00..51404.11 rows=163832 width=4) (actual time=0.085..683.038 rows=167708 loops=1)
+                    Filter: (company_id < 34)
+                    Rows Removed by Filter: 2441421
+        ->  Materialize  (cost=96343.87..97112.16 rows=153659 width=4) (actual time=1257.191..1328.902 rows=155745 loops=1)
+              ->  Sort  (cost=96343.87..96728.01 rows=153659 width=4) (actual time=1257.184..1302.701 rows=151392 loops=1)
+                    Sort Key: mk.movie_id
+                    Sort Method: external merge  Disk: 2072kB
+                    ->  Seq Scan on movie_keyword mk  (cost=0.00..81003.12 rows=153659 width=4) (actual time=0.033..1105.722 rows=151397 loops=1)
+                          Filter: (keyword_id > 73731)
+                          Rows Removed by Filter: 4372533
+  ->  Index Only Scan using title_pkey on title t  (cost=0.43..1.55 rows=1 width=4) (actual time=0.005..0.005 rows=1 loops=19254)
+        Index Cond: (id = mc.movie_id)
+        Heap Fetches: 19254
+Planning time: 1.145 ms
+Execution time: 2403.528 ms

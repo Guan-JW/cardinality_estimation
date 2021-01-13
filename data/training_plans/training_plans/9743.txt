@@ -1,0 +1,17 @@
+Nested Loop  (cost=0.43..399054.35 rows=1 width=0) (actual time=6007.277..6903.373 rows=2 loops=1)
+  Join Filter: (t.id = mi.movie_id)
+  Rows Removed by Join Filter: 1260583
+  ->  Seq Scan on movie_info mi  (cost=0.00..346232.03 rows=17937 width=4) (actual time=5036.795..5609.016 rows=140065 loops=1)
+        Filter: (info_type_id = 9)
+        Rows Removed by Filter: 14695655
+  ->  Materialize  (cost=0.43..52284.22 rows=2 width=8) (actual time=0.004..0.008 rows=9 loops=140065)
+        ->  Nested Loop  (cost=0.43..52284.21 rows=2 width=8) (actual time=618.010..954.269 rows=9 loops=1)
+              ->  Seq Scan on movie_companies mc  (cost=0.00..51404.11 rows=104 width=4) (actual time=10.816..917.785 rows=1440 loops=1)
+                    Filter: (company_id = 239)
+                    Rows Removed by Filter: 2607689
+              ->  Index Scan using title_pkey on title t  (cost=0.43..8.45 rows=1 width=4) (actual time=0.025..0.025 rows=0 loops=1440)
+                    Index Cond: (id = mc.movie_id)
+                    Filter: ((kind_id < 7) AND (production_year = 2006))
+                    Rows Removed by Filter: 1
+Planning time: 1.226 ms
+Execution time: 6903.533 ms

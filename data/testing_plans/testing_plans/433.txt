@@ -1,0 +1,17 @@
+Hash Join  (cost=978345.42..1041709.64 rows=207474 width=186)
+  Hash Cond: (mi_idx.movie_id = t.id)
+  ->  Seq Scan on movie_info_idx mi_idx  (cost=0.00..21735.35 rows=1380035 width=50) (actual time=0.014..380.199 rows=1380035 loops=1)
+  ->  Hash  (cost=966168.71..966168.71 rows=380137 width=136) (actual time=31841.800..31841.800 rows=484930 loops=1)
+        Buckets: 32768  Batches: 32  Memory Usage: 2281kB
+        ->  Merge Join  (cost=843000.20..966168.71 rows=380137 width=136) (actual time=15731.366..30934.831 rows=484930 loops=1)
+              Merge Cond: (t.id = ci.movie_id)
+              ->  Index Scan using title_pkey on title t  (cost=0.43..110313.87 rows=2528527 width=94) (actual time=0.007..13880.973 rows=2525973 loops=1)
+              ->  Materialize  (cost=842999.58..844900.27 rows=380137 width=42) (actual time=15731.304..16258.106 rows=484930 loops=1)
+                    ->  Sort  (cost=842999.58..843949.92 rows=380137 width=42) (actual time=15731.298..16173.488 rows=484930 loops=1)
+                          Sort Key: ci.movie_id
+                          Sort Method: external merge  Disk: 13552kB
+                          ->  Seq Scan on cast_info ci  (cost=0.00..796071.18 rows=380137 width=42) (actual time=7331.008..15158.876 rows=484930 loops=1)
+                                Filter: ((person_id > 1692308) AND (role_id = 6))
+                                Rows Removed by Filter: 35759414
+Planning time: 1.583 ms
+Execution time: 33428.259 ms

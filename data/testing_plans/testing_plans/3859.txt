@@ -1,0 +1,19 @@
+Hash Join  (cost=237796.08..992153.88 rows=1203689 width=181)
+  Hash Cond: (mi.movie_id = t.id)
+  ->  Seq Scan on movie_info mi  (cost=0.00..309384.22 rows=14739122 width=75) (actual time=0.015..6330.105 rows=14835720 loops=1)
+  ->  Hash  (cost=231785.89..231785.89 rows=206495 width=106) (actual time=15518.463..15518.463 rows=195977 loops=1)
+        Buckets: 32768  Batches: 8  Memory Usage: 3419kB
+        ->  Merge Join  (cost=105914.42..231785.89 rows=206495 width=106) (actual time=1710.757..14583.941 rows=195977 loops=1)
+              Merge Cond: (t.id = mk.movie_id)
+              ->  Index Scan using title_pkey on title t  (cost=0.43..116635.19 rows=2230329 width=94) (actual time=0.009..12304.082 rows=2224325 loops=1)
+                    Filter: (production_year > 1958)
+                    Rows Removed by Filter: 301462
+              ->  Materialize  (cost=105885.44..107055.96 rows=234104 width=12) (actual time=1710.713..1863.826 rows=246484 loops=1)
+                    ->  Sort  (cost=105885.44..106470.70 rows=234104 width=12) (actual time=1710.706..1820.305 rows=246484 loops=1)
+                          Sort Key: mk.movie_id
+                          Sort Method: external merge  Disk: 5296kB
+                          ->  Seq Scan on movie_keyword mk  (cost=0.00..81003.12 rows=234104 width=12) (actual time=0.023..1483.161 rows=246484 loops=1)
+                                Filter: (keyword_id < 213)
+                                Rows Removed by Filter: 4277446
+Planning time: 1.469 ms
+Execution time: 34819.279 ms

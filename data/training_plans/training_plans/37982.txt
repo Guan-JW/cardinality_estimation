@@ -1,0 +1,17 @@
+Hash Join  (cost=116855.76..1163954.58 rows=1294259 width=0) (actual time=2786.154..28419.058 rows=1262501 loops=1)
+  Hash Cond: (ci.movie_id = t.id)
+  ->  Seq Scan on cast_info ci  (cost=0.00..614943.12 rows=36225612 width=4) (actual time=0.024..12711.522 rows=36244344 loops=1)
+  ->  Hash  (cost=115373.52..115373.52 rows=90339 width=8) (actual time=2785.019..2785.019 rows=55027 loops=1)
+        Buckets: 131072  Batches: 2  Memory Usage: 2106kB
+        ->  Hash Join  (cost=81987.19..115373.52 rows=90339 width=8) (actual time=1284.447..2763.919 rows=55027 loops=1)
+              Hash Cond: (mi_idx.movie_id = t.id)
+              ->  Seq Scan on movie_info_idx mi_idx  (cost=0.00..25185.44 rows=464934 width=4) (actual time=0.016..394.392 rows=460185 loops=1)
+                    Filter: (info_type_id > 100)
+                    Rows Removed by Filter: 919850
+              ->  Hash  (cost=73925.90..73925.90 rows=491303 width=4) (actual time=1283.257..1283.257 rows=352208 loops=1)
+                    Buckets: 131072  Batches: 8  Memory Usage: 2561kB
+                    ->  Seq Scan on title t  (cost=0.00..73925.90 rows=491303 width=4) (actual time=0.023..1153.936 rows=352208 loops=1)
+                          Filter: ((kind_id > 1) AND (production_year < 1989))
+                          Rows Removed by Filter: 2176104
+Planning time: 1.198 ms
+Execution time: 28580.394 ms

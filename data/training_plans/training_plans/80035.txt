@@ -1,0 +1,22 @@
+Nested Loop  (cost=405575.15..406222.73 rows=3 width=0) (actual time=5604.676..5606.128 rows=3 loops=1)
+  Join Filter: (mc.movie_id = t.id)
+  ->  Merge Join  (cost=405574.72..405678.40 rows=96 width=8) (actual time=5604.029..5605.791 rows=18 loops=1)
+        Merge Cond: (mc.movie_id = mi.movie_id)
+        ->  Sort  (cost=58075.37..58081.91 rows=2615 width=4) (actual time=691.104..691.182 rows=266 loops=1)
+              Sort Key: mc.movie_id
+              Sort Method: quicksort  Memory: 37kB
+              ->  Seq Scan on movie_companies mc  (cost=0.00..57926.93 rows=2615 width=4) (actual time=357.460..690.932 rows=266 loops=1)
+                    Filter: ((company_id = 1709) AND (company_type_id = 2))
+                    Rows Removed by Filter: 2608863
+        ->  Sort  (cost=347499.33..347544.17 rows=17937 width=4) (actual time=4912.648..4913.581 rows=6614 loops=1)
+              Sort Key: mi.movie_id
+              Sort Method: quicksort  Memory: 503kB
+              ->  Seq Scan on movie_info mi  (cost=0.00..346232.03 rows=17937 width=4) (actual time=4528.988..4909.909 rows=6620 loops=1)
+                    Filter: (info_type_id = 75)
+                    Rows Removed by Filter: 14829100
+  ->  Index Scan using title_pkey on title t  (cost=0.43..5.66 rows=1 width=4) (actual time=0.015..0.015 rows=0 loops=18)
+        Index Cond: (id = mi.movie_id)
+        Filter: ((production_year > 1990) AND (kind_id = 1))
+        Rows Removed by Filter: 1
+Planning time: 1.196 ms
+Execution time: 5606.311 ms

@@ -1,0 +1,22 @@
+Nested Loop  (cost=1198513.65..1226548.51 rows=4663 width=0) (actual time=17015.944..18604.333 rows=104432 loops=1)
+  Join Filter: (ci.movie_id = t.id)
+  ->  Merge Join  (cost=1198513.22..1201496.84 rows=29736 width=8) (actual time=17015.151..17409.872 rows=119614 loops=1)
+        Merge Cond: (mi.movie_id = ci.movie_id)
+        ->  Sort  (cost=397356.89..398540.93 rows=473617 width=4) (actual time=5761.664..5934.478 rows=486554 loops=1)
+              Sort Key: mi.movie_id
+              Sort Method: external merge  Disk: 6656kB
+              ->  Seq Scan on movie_info mi  (cost=0.00..346232.03 rows=473617 width=4) (actual time=3210.863..5261.166 rows=486554 loops=1)
+                    Filter: (info_type_id = 5)
+                    Rows Removed by Filter: 14349166
+        ->  Sort  (cost=801156.30..801315.61 rows=63725 width=4) (actual time=11253.449..11333.764 rows=293969 loops=1)
+              Sort Key: ci.movie_id
+              Sort Method: external sort  Disk: 3808kB
+              ->  Seq Scan on cast_info ci  (cost=0.00..796071.18 rows=63725 width=4) (actual time=5219.956..10959.016 rows=216486 loops=1)
+                    Filter: ((person_id > 2992134) AND (role_id > 10))
+                    Rows Removed by Filter: 36027858
+  ->  Index Scan using title_pkey on title t  (cost=0.43..0.83 rows=1 width=4) (actual time=0.009..0.009 rows=1 loops=119614)
+        Index Cond: (id = mi.movie_id)
+        Filter: (kind_id < 7)
+        Rows Removed by Filter: 0
+Planning time: 5.526 ms
+Execution time: 18626.972 ms

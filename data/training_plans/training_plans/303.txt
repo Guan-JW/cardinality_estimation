@@ -1,0 +1,14 @@
+Merge Join  (cost=119715.17..247528.86 rows=311740 width=106) (actual time=2243.126..16017.519 rows=334246 loops=1)
+  Merge Cond: (t.id = mk.movie_id)
+  ->  Index Scan using title_pkey on title t  (cost=0.43..116635.19 rows=2226390 width=94) (actual time=0.008..13466.257 rows=2223482 loops=1)
+        Filter: (production_year < 2012)
+        Rows Removed by Filter: 302492
+  ->  Materialize  (cost=119686.20..121456.42 rows=354045 width=12) (actual time=1911.346..2116.426 rows=351230 loops=1)
+        ->  Sort  (cost=119686.20..120571.31 rows=354045 width=12) (actual time=1911.339..2055.417 rows=351230 loops=1)
+              Sort Key: mk.movie_id
+              Sort Method: external merge  Disk: 7544kB
+              ->  Seq Scan on movie_keyword mk  (cost=0.00..81003.12 rows=354045 width=12) (actual time=0.029..1572.131 rows=351230 loops=1)
+                    Filter: (keyword_id > 47402)
+                    Rows Removed by Filter: 4172700
+Planning time: 0.701 ms
+Execution time: 16041.215 ms
